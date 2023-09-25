@@ -4,6 +4,7 @@
 #define printfelem "%d"
 
 typedef int elem;
-//typedef struct Stack Stack_t;
+typedef long long int canary_t;
+typedef unsigned int hash_t;
 
 #endif // TYPES_H_INCLUDED
