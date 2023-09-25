@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-#include "types.h"
+#include "Types.h"
 #include "Key.h"
 
 extern FILE* LOG_FILE;

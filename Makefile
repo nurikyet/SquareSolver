@@ -1,8 +1,8 @@
 CC=g++
-CFLAGS=-c -Wall
+CFLAGS=-c -Wall -DWITH_CANARY -DHASH
 LDFLAGS=
 
-SOURCES=Key.cpp Main.cpp logfile.cpp
+SOURCES=Key.cpp Main.cpp logfile.cpp Hash.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=hello
 

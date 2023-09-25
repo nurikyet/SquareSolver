@@ -1,7 +1,7 @@
 #ifndef KEY_H_INCLUDED
 #define KEY_H_INCLUDED
 
-#include "types.h"
+#include "Types.h"
 
 
 #ifndef WITH_CANARY
@@ -24,11 +24,11 @@ elem StackPop(struct stack* stk, elem retvalue);
 int StackDtor(struct stack* stk);
 int StackRealloc(stack *stk, int newcapacity);
 int StackCtor(struct stack* stk, size_t cpt);
-int StackOk(const struct stack* stk);
+int StackOk(struct stack* stk);
 int StackPush(struct stack* stk, const elem value);
 
-hash_t DataHash(const struct stack* stk);
-hash_t StructHash(const struct stack* stk);
+hash_t DataHash(struct stack* stk);
+hash_t StructHash(struct stack* stk);
 
 
 static const canary_t canary_value = 0xDEADBEEF;

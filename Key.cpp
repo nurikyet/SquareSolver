@@ -18,6 +18,7 @@ int StackCtor(struct stack* stk, size_t cpt)
         stk->capacity = 0;
         return (int)Error::ERROR_MEMORY;
         }
+
     elem* left_elem        = (elem*)((char*)(stk->data) + sizeof(canary_t));
     canary_t* first_canary = (canary_t*) ((char*)(stk->data));
     canary_t* last_canary  = (canary_t*) ((char*)(stk->data) + (stk->capacity) * sizeof(elem) + sizeof(canary_t));
@@ -27,6 +28,7 @@ int StackCtor(struct stack* stk, size_t cpt)
 
     stk->stack_first = canary_value;
     stk->stack_last  = canary_value;
+
     #endif
 
     #if !WITH_CANARY
@@ -124,7 +126,7 @@ elem StackPop(struct stack* stk, elem* retvalue)
 
 //-----------------------------------------------------------------------------
 
-int StackOk(const struct stack* stk)
+int StackOk(struct stack* stk)
     {
     #if HASH
     if (!HashOkData(stk))
@@ -262,7 +264,7 @@ int StackRealloc(stack *stk, int newcapacity)
 
 //-----------------------------------------------------------------------------
 
-hash_t DataHash(const struct stack* stk)
+hash_t DataHash(struct stack* stk)
     {
     assert(stk);
 
@@ -271,9 +273,9 @@ hash_t DataHash(const struct stack* stk)
     hash_t hash      = 0;
 
     #if WITH_CANARY
-    data      = (elem*)((char*) (stk->data) - sizeof(canary_t));
+    data = (elem*)((char*) data - sizeof(canary_t));
     data_size = data_size + 2 * sizeof(canary_t);
-    hash      = SumHash ((stk->data), sizeof((stk->data)));
+    hash      = SumHash ((stk->data), data_size);
     #endif
 
     return hash;
@@ -281,7 +283,7 @@ hash_t DataHash(const struct stack* stk)
 
 //-----------------------------------------------------------------------------
 
-hash_t StructHash(const struct stack* stk)
+hash_t StructHash(struct stack* stk)
     {
     assert(stk);
     hash_t new_hash = 0;

@@ -11,7 +11,6 @@ int main()
         StackPush(&stk, i);
         }
     //PrintStack(&stk, PrintStackValue);
-    StackPop(&stk, 5);
     //PrintStack(&stk, PrintStackValue);
     StackDtor(&stk);
 

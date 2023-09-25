@@ -1,10 +1,12 @@
 #include <stdio.h>
+#include <assert.h>
 
 #include "Hash.h"
+#include "Key.h"
 #include "Types.h"
 
 
-bool HashOkData(const struct stack* stk)
+bool HashOkData(struct stack* stk)
     {
     assert(stk);
 
@@ -16,11 +18,11 @@ bool HashOkData(const struct stack* stk)
         }
     return true;
     }
-bool HashOkStruct(const struct stack* stk)
+bool HashOkStruct(struct stack* stk)
     {
     assert(stk);
 
-    hash_t expected_hash = stk;
+    hash_t expected_hash = stk->struct_hash;
 
     if (expected_hash != StructHash(stk))
         {
@@ -30,7 +32,7 @@ bool HashOkStruct(const struct stack* stk)
     }
 //-----------------------------------------------------------------------------
 
-hash_t SumHash (char* object , hash_t len)
+hash_t SumHash (void* object , hash_t len)
 {
     assert(object);
     const hash_t m = 0x5bd1e995;
