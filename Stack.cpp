@@ -11,8 +11,8 @@ Stack cur_stack;
 Stack_Ctor(&cur_stack, 10);
 STACK_CONSTRUCT(cur_stack, 10)
 {
-Stack cur_stack;//äåôàéí
-    //  êîíñòðóêòîð
+Stack cur_stack;//Ã¤Ã¥Ã´Ã Ã©Ã­
+    //  ÃªÃ®Ã­Ã±Ã²Ã°Ã³ÃªÃ²Ã®Ã°
     = #cur_stack;
 }
 */
@@ -102,10 +102,11 @@ int StackPush(struct stack* stk, const elem value)
         }
     (stk->data)[(stk->size)++] = value;
     //stk->size += 1;
-    VERIFY(stk)
+
     #ifdef HASH
         ChangeHash(stk);
     #endif
+    VERIFY(stk)
     return (int)Error::NO_ERROR;
     }
 
