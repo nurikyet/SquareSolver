@@ -14,12 +14,22 @@
 
 #endif
 
+#define STACK_DUMP(stk) StackDump(LOG_FILE, stk, __func__, __FILE__, __LINE__)
+
+#define VERIFY(stk) if (StackOk(stk) != 0)                        \
+                        {                                         \
+                        STACK_DUMP(stk);                          \
+                        return (int) Error::ERROR_DATA;           \
+                        }
+
+
+
 void StackDump(FILE* fp, struct stack* stk, const char* func, const char* file, const int line);
 void PrintStackValue(FILE* fp, const elem value);
 void PrintStack(FILE* fp, const stack *stk, void (*PrintStackValue)(FILE* fp, const elem value));
 void ChangeHash(struct stack* stk);
 
-elem StackPop(struct stack* stk, elem retvalue);
+elem StackPop(struct stack* stk, elem* retvalue);
 
 int StackDtor(struct stack* stk);
 int StackRealloc(stack *stk, int newcapacity);
@@ -36,7 +46,7 @@ static const canary_t canary_value = 0xDEADBEEF;
 struct stack
     {
     #if WITH_CANARY
-    canary_t stack_first;
+        canary_t stack_first;
     #endif
 
     int size;
@@ -44,12 +54,12 @@ struct stack
     elem* data;
 
     #if HASH
-    hash_t data_hash;
-    hash_t struct_hash;
+        hash_t data_hash;
+        hash_t struct_hash;
     #endif
 
     #if WITH_CANARY
-    canary_t stack_last;
+        canary_t stack_last;
     #endif
     };
 

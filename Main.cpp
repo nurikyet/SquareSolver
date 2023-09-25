@@ -10,6 +10,11 @@ int main()
         {
         StackPush(&stk, i);
         }
+    for (int i = 0; i < 9; i++)
+        {
+        elem retvalue = .0;
+        StackPop(&stk, &retvalue);
+        }
     //PrintStack(&stk, PrintStackValue);
     //PrintStack(&stk, PrintStackValue);
     StackDtor(&stk);
