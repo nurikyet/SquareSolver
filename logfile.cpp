@@ -5,6 +5,7 @@
 
 #include "logfile.h"
 #include "Types.h"
+#include "Stack.h"
 
 FILE* LOG_FILE = stderr;
 
@@ -16,11 +17,20 @@ int OpenLog(const char* FILE_NAME)
         {
         LOG_FILE = stderr;
         }
+    time_t now = 0;
+    time(&now);
+    fprintf(LOG_FILE, "------------------------------START AT %s--------------------------------\n", ctime(&now));
+    #ifdef WITH_CANARY
+        fprintf(LOG_FILE, "Work with CANARY\n");
+    #endif
+    #ifdef HASH
+        fprintf(LOG_FILE, "Work with HASH\n");
+    #endif
     atexit(CloseLog);
+    return 0;
     }
 void CloseLog()
     {
-    //fputc("The work is completed", LOG_FILE);
-    fprintf(LOG_FILE, "The work is completed");
+    fprintf(LOG_FILE, "------------------------The work is completed----------------------------\n");
     fclose(LOG_FILE);
     }

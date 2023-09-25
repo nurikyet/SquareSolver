@@ -6,6 +6,6 @@
 bool HashOkData(struct stack* stk);
 bool HashOkStruct(struct stack* stk);
 
-hash_t SumHash (void* object , hash_t len);
+hash_t SumHash (void* object, hash_t len);
 
 #endif // HASH_H_INCLUDED

@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #include "Types.h"
-#include "Key.h"
+#include "Stack.h"
 
 extern FILE* LOG_FILE;
 static const char* EXTENSION = ".log";

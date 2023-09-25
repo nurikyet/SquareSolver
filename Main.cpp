@@ -1,22 +1,20 @@
 #include <stdio.h>
 
-#include "Key.h"
+#include "Stack.h"
+#include "logfile.h"
 
-int main()
-    {
+int main(const int argc, const char* argv[])
+{
+    #ifdef LOG
+        OpenLog(argv[0]);
+    #endif
     struct stack stk = {};
-    StackCtor(&stk, 10);
-    for (int i = 0; i < 20; i++)
+    StackCtor(&stk, 20);
+    StackPush(&stk, 5);
+    /*for (int i = 0; i < 10; i++)
         {
         StackPush(&stk, i);
-        }
-    for (int i = 0; i < 9; i++)
-        {
-        elem retvalue = .0;
-        StackPop(&stk, &retvalue);
-        }
-    //PrintStack(&stk, PrintStackValue);
-    //PrintStack(&stk, PrintStackValue);
+        } */
     StackDtor(&stk);
 
     }

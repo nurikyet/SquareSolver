@@ -2,7 +2,7 @@
 #include <assert.h>
 
 #include "Hash.h"
-#include "Key.h"
+#include "Stack.h"
 #include "Types.h"
 
 
@@ -12,11 +12,7 @@ bool HashOkData(struct stack* stk)
 
     hash_t expected_hash = stk->data_hash;
 
-    if (expected_hash != DataHash(stk))
-        {
-        return false;
-        }
-    return true;
+    return(expected_hash == DataHash(stk));
     }
 
 //-----------------------------------------------------------------------------
@@ -27,16 +23,12 @@ bool HashOkStruct(struct stack* stk)
 
     hash_t expected_hash = stk->struct_hash;
 
-    if (expected_hash != StructHash(stk))
-        {
-        return false;
-        }
-    return true;
+    return(expected_hash == StructHash(stk));
     }
 //-----------------------------------------------------------------------------
 
 hash_t SumHash (void* object , hash_t len)
-{
+    {
     assert(object);
     const hash_t m = 0x5bd1e995;
     const hash_t seed = 0;
@@ -81,5 +73,5 @@ hash_t SumHash (void* object , hash_t len)
     h ^= h >> 15;
 
     return h;
-}
+    }
 
