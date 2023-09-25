@@ -1,7 +1,7 @@
 #ifndef TYPES_H_INCLUDED
 #define TYPES_H_INCLUDED
 
-#define printfelem "%d"
+#define printfelem "%lg"
 
 typedef long long elem;
 typedef unsigned long long canary_t;
