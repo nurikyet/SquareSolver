@@ -18,6 +18,9 @@ bool HashOkData(struct stack* stk)
         }
     return true;
     }
+
+//-----------------------------------------------------------------------------
+
 bool HashOkStruct(struct stack* stk)
     {
     assert(stk);

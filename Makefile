@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-c -Wall -DWITH_CANARY -DHASH
+CFLAGS=-c -Wall 
 LDFLAGS=
 
 SOURCES=Key.cpp Main.cpp logfile.cpp Hash.cpp
