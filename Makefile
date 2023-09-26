@@ -2,7 +2,7 @@ CC=g++
 CFLAGS=-c -Wall 
 LDFLAGS=
 
-SOURCES=Key.cpp Main.cpp logfile.cpp Hash.cpp
+SOURCES=Stack.cpp Main.cpp logfile.cpp Hash.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=hello
 
