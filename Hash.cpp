@@ -5,30 +5,39 @@
 #include "Stack.h"
 #include "Types.h"
 
-
+//
 bool HashOkData(struct stack* stk)
     {
+    #ifdef HASH
     assert(stk);
 
     hash_t expected_hash = stk->data_hash;
 
     return(expected_hash == DataHash(stk));
+    #endif
+
+    return false;
     }
 
 //-----------------------------------------------------------------------------
 
 bool HashOkStruct(struct stack* stk)
     {
+    #ifdef HASH
     assert(stk);
 
     hash_t expected_hash = stk->struct_hash;
 
     return(expected_hash == StructHash(stk));
+    #endif
+
+    return false;
     }
 //-----------------------------------------------------------------------------
 
-hash_t SumHash (void* object , hash_t len)
+hash_t SumHash (void* object , size_t len)
     {
+    #ifdef HASH
     assert(object);
     const hash_t m = 0x5bd1e995;
     const hash_t seed = 0;
@@ -39,7 +48,7 @@ hash_t SumHash (void* object , hash_t len)
     const unsigned char * data = (const unsigned char *)object;
     hash_t k = 0;
 
-    while (len >= 4)
+   while (len >= 4)
         {
         k  = data[0];
         k |= data[1] << 8;
@@ -73,5 +82,6 @@ hash_t SumHash (void* object , hash_t len)
     h ^= h >> 15;
 
     return h;
+    #endif
     }
 

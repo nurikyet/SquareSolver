@@ -11,15 +11,15 @@ Stack cur_stack;
 Stack_Ctor(&cur_stack, 10);
 STACK_CONSTRUCT(cur_stack, 10)
 {
-Stack cur_stack;//Ã¤Ã¥Ã´Ã Ã©Ã­
-    //  ÃªÃ®Ã­Ã±Ã²Ã°Ã³ÃªÃ²Ã®Ã°
+Stack cur_stack;//äåôàéí
+    //  êîíñòðóêòîð
     = #cur_stack;
 }
 */
 int StackCtor(struct stack* stk, size_t cpt)
     {
     assert(stk);
-
+    assert(cpt);
     stk->capacity = cpt;
 
     #ifdef WITH_CANARY
@@ -31,8 +31,8 @@ int StackCtor(struct stack* stk, size_t cpt)
             }
 
         elem* left_elem        = (elem*)((char*)(stk->data) + sizeof(canary_t));
-        canary_t* first_canary = (canary_t*) ((char*)(stk->data));
-        canary_t* last_canary  = (canary_t*) ((char*)(stk->data) + (stk->capacity) * sizeof(elem));
+        canary_t* first_canary = (canary_t*) stk->data;
+        canary_t* last_canary  = (canary_t*) ((char*)(stk->data) + (stk->capacity) * sizeof(elem) + sizeof(canary_t));
 
         *first_canary = canary_value;
         *last_canary  = canary_value;
@@ -40,7 +40,7 @@ int StackCtor(struct stack* stk, size_t cpt)
         stk->stack_first = canary_value;
         stk->stack_last  = canary_value;
 
-        //printf("Address is %p    %zu    %x\n", *last_canary, *last_canary,   *last_canary);
+        //printf("Address is %p    %zu    %x\n", last_canary, *last_canary,   *last_canary);
 
     #else
         stk->data = (elem*) calloc(stk->capacity, sizeof(elem)); // stk->capacity is not initialized yet!
@@ -57,6 +57,11 @@ int StackCtor(struct stack* stk, size_t cpt)
 
     #ifdef HASH
         ChangeHash(stk);
+    #endif
+    #ifdef WITH_CANARY
+        printf("Left canary: %d  %X\n", (elem*) first_canary - stk->data, *first_canary);
+        printf("Right canary: %d %X\n", (elem*) last_canary - stk->data,  *last_canary);
+
     #endif
     return (int)Error::NO_ERROR;
     }
@@ -93,7 +98,11 @@ int StackPush(struct stack* stk, const elem value)
     assert(stk);
     assert(stk->data != NULL);
 
+    #ifdef HASH
+        ChangeHash(stk);
+    #endif
     VERIFY(stk)
+    printf("LOL!\n");
 
     if ((stk->size) == (stk->capacity))
         {
@@ -101,12 +110,12 @@ int StackPush(struct stack* stk, const elem value)
         StackRealloc(stk, newcapacity);
         }
     (stk->data)[(stk->size)++] = value;
-    //stk->size += 1;
 
     #ifdef HASH
         ChangeHash(stk);
     #endif
     VERIFY(stk)
+
     return (int)Error::NO_ERROR;
     }
 
@@ -144,15 +153,17 @@ int StackOk(struct stack* stk)
 
     int result = 0;
     #ifdef HASH
-        if (!HashOkData(stk))
+        if (HashOkData(stk) == 0)
             {
+            printf("1\n");
             result |= (int)Error::ERROR_DATA;
             }
     #endif
 
     #ifdef HASH
-        if (!HashOkStruct(stk))
+        if (HashOkStruct(stk) == 0)
             {
+            printf("2\n");
             result |= (int)Error::ERROR_STRUCT;
             }
     #endif
@@ -160,12 +171,14 @@ int StackOk(struct stack* stk)
     #ifdef WITH_CANARY
         if (stk->stack_first != canary_value or stk->stack_last != canary_value)
             {
+            printf("3\n");
             result |= (int)Error::ERROR_STRUCT_CANARY;
             }
         canary_t* first_canary  = (canary_t*)((char*) stk->data - sizeof(canary_t));
         canary_t* last_canary   = (canary_t*)((char*) stk->data + (stk->capacity) * sizeof(elem));
         if (*first_canary != canary_value or *last_canary != canary_value)
             {
+            printf("4\n");
             result |= (int)Error::ERROR_DATA_CANARY;
             }
     #endif
@@ -206,9 +219,12 @@ void StackDump(FILE* fp, struct stack* stk, const char* func, const char* file, 
         fprintf(fp, "First canary in stack is %x\n", stk->stack_first);
         fprintf(fp, "size < %d\n", stk->size);
         fprintf(fp, "capacity = %d\n", stk->capacity);
-
+        #ifdef HASH
+            fprintf(fp, "Stack hash = %d\n", stk->struct_hash);
+            fprintf(fp, "Data hash  = %d\n", stk->data_hash);
+        #endif
         canary_t* first_canary  = (canary_t*)((char*) stk->data - sizeof(canary_t));
-        canary_t* last_canary   = (canary_t*)((char*) stk->data + stk->capacity * sizeof(elem));
+        canary_t* last_canary   = (canary_t*)((char*) stk->data + (stk->capacity) * sizeof(elem));
 
         fprintf(fp, "first canary in data is > %x\n"
                     "last canary in data  is > %x\n", *first_canary, *last_canary);
@@ -267,7 +283,9 @@ int StackRealloc(struct stack *stk, int newcapacity)
                 }
             else
                 {
-                ChangeHash(stk);
+                #ifdef HASH
+                    ChangeHash(stk);
+                #endif
                 return (int) Error::ERROR_MEMORY;
                 }
 
@@ -287,7 +305,7 @@ int StackRealloc(struct stack *stk, int newcapacity)
         else
             {
             #ifdef HASH
-            ChangeHash(stk);
+                ChangeHash(stk);
             #endif
             return (int) Error::ERROR_MEMORY;
             }
@@ -309,6 +327,7 @@ int StackRealloc(struct stack *stk, int newcapacity)
     #ifdef HASH
         ChangeHash(stk);
     #endif
+    VERIFY(stk)
     return (int)Error::NO_ERROR;
     }
 
@@ -318,14 +337,14 @@ hash_t DataHash(struct stack* stk)
     {
     assert(stk);
 
-    elem* data     = stk->data;
+    elem* data       = stk->data;
     size_t data_size = stk->capacity * sizeof(elem);
     hash_t hash      = 0;
 
     #ifdef WITH_CANARY
-        data = (elem*)((char*) data - sizeof(canary_t));
+        data       = (elem*)((char*) data - sizeof(canary_t));
         data_size += 2 * sizeof(canary_t);
-        hash      = SumHash ((stk->data), data_size);
+        hash       = SumHash ((stk->data), data_size);
     #endif
 
     return hash;
