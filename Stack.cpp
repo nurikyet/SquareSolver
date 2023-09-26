@@ -43,7 +43,7 @@ int StackCtor(struct stack* stk, size_t cpt)
         //printf("Address is %p    %zu    %x\n", last_canary, *last_canary,   *last_canary);
 
     #else
-        stk->data = (elem*) calloc(stk->capacity, sizeof(elem)); // stk->capacity is not initialized yet!
+        stk->data = (elem*) calloc((stk->capacity)*sizeof(elem), 1); // stk->capacity is not initialized yet!
         if (stk->data == nullptr)
             {
             stk->capacity = 0;
@@ -51,10 +51,18 @@ int StackCtor(struct stack* stk, size_t cpt)
             }
         elem* left_elem = (stk->data);
     #endif
-
     stk->data = left_elem;
     stk->size = 0;
-
+    #ifdef HASH
+    if (stk->data_hash == nullptr)
+        {
+        stk->data_hash = SumHash();
+        }
+    if (stk->struct_hash == nullptr)
+        {
+        stk->struct_hash = SumHash();
+        }
+    #endif
     #ifdef HASH
         ChangeHash(stk);
     #endif
@@ -97,11 +105,10 @@ int StackPush(struct stack* stk, const elem value)
     {
     assert(stk);
     assert(stk->data != NULL);
+    printf ("HERE!!!!!!!\n");
 
-    #ifdef HASH
-        ChangeHash(stk);
-    #endif
     VERIFY(stk)
+    printf ("HERE LOL\n");
     printf("LOL!\n");
 
     if ((stk->size) == (stk->capacity))

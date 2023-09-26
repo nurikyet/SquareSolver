@@ -47,6 +47,7 @@ struct stack
     elem* data;
 
     #ifdef HASH
+        hash_f hash_func;
         hash_t data_hash;
         hash_t struct_hash;
     #endif
