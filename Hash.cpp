@@ -5,7 +5,6 @@
 #include "Stack.h"
 #include "Types.h"
 
-//
 bool HashOkData(struct stack* stk)
     {
     #ifdef HASH

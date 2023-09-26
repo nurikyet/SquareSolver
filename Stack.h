@@ -21,7 +21,7 @@ void StackDump(FILE* fp, struct stack* stk, const char* func, const char* file, 
 void PrintStack(FILE* fp, const stack *stk);
 void ChangeHash(struct stack* stk);
 
-elem StackPop(struct stack* stk, elem* retvalue);
+int StackPop(struct stack* stk, elem* retvalue);
 
 int StackDtor(struct stack* stk);
 int StackRealloc(stack *stk, int newcapacity);
