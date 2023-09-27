@@ -15,11 +15,19 @@
                         return (int) Error::ERROR_DATA;           \
                         }
 
-
+/*
+Stack cur_stack;
+Stack_Ctor(&cur_stack, 10);
+STACK_CONSTRUCT(cur_stack, 10)
+{
+Stack cur_stack;//дефайн
+    //  конструктор
+    = #cur_stack;
+}
+*/
 
 void StackDump(FILE* fp, struct stack* stk, const char* func, const char* file, const int line);
 void PrintStack(FILE* fp, const stack *stk);
-void ChangeHash(struct stack* stk);
 
 int StackPop(struct stack* stk, elem* retvalue);
 
@@ -28,10 +36,6 @@ int StackRealloc(stack *stk, int newcapacity);
 int StackCtor(struct stack* stk, size_t cpt);
 int StackOk(struct stack* stk);
 int StackPush(struct stack* stk, const elem value);
-
-hash_t DataHash(struct stack* stk);
-hash_t StructHash(struct stack* stk);
-
 
 static const canary_t canary_value = 0xDEADBEEF;
 const int multiplier = 2;
@@ -47,7 +51,7 @@ struct stack
     elem* data;
 
     #ifdef HASH
-        hash_f hash_func;
+        //hash_f hash_func;
         hash_t data_hash;
         hash_t struct_hash;
     #endif

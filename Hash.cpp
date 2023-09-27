@@ -8,30 +8,75 @@
 bool HashOkData(struct stack* stk)
     {
     #ifdef HASH
-    assert(stk);
+        hash_t expected_hash = stk->data_hash;
 
-    hash_t expected_hash = stk->data_hash;
-
-    return(expected_hash == DataHash(stk));
+        return(expected_hash == DataHash(stk));
     #endif
-
     return false;
     }
 
 //-----------------------------------------------------------------------------
 
-bool HashOkStruct(struct stack* stk)
+hash_t DataHash(struct stack* stk)
     {
-    #ifdef HASH
     assert(stk);
 
-    hash_t expected_hash = stk->struct_hash;
+    elem* data       = stk->data;
+    size_t data_size = stk->capacity * sizeof(elem);
+    hash_t hash      = 0;
 
-    return(expected_hash == StructHash(stk));
+    #ifdef WITH_CANARY
+        data       = (elem*)((char*) data - sizeof(canary_t));
+        data_size += 2 * sizeof(canary_t);
+        hash       = SumHash ((stk->data), data_size);
     #endif
 
+    return hash;
+    }
+//-----------------------------------------------------------------------------
+
+bool HashOkStruct(struct stack* stk)
+    {
+    assert(stk);
+    #ifdef HASH
+        hash_t expected_hash = stk->struct_hash;
+
+        return(expected_hash == StructHash(stk));
+    #endif
     return false;
     }
+
+//-----------------------------------------------------------------------------
+
+hash_t StructHash(struct stack* stk)
+    {
+    assert(stk);
+    hash_t new_hash = 0;
+
+    #ifdef HASH
+        hash_t third    = stk->struct_hash;
+        hash_t new_data = stk->data_hash;
+        stk->data_hash = 0;
+        stk->struct_hash = 0;
+
+        new_hash = SumHash(stk, sizeof(struct stack));
+        stk->data_hash = new_data;
+        stk->struct_hash = third;
+    #endif
+
+    return new_hash;
+    }
+
+//-----------------------------------------------------------------------------
+
+void ChangeHash(struct stack* stk)
+    {
+    #ifdef HASH
+        stk->struct_hash = StructHash(stk);
+        stk->data_hash   = DataHash(stk);
+    #endif
+    }
+
 //-----------------------------------------------------------------------------
 
 hash_t SumHash (void* object , size_t len)
