@@ -7,19 +7,8 @@
 #include "Hash.h"
 #include "Stack.h"
 #include "logfile.h"
-/*
-Stack cur_stack;
-Stack_Ctor(&cur_stack, 10);
-STACK_CONSTRUCT(cur_stack, 10)
-{
-Stack cur_stack;//äåôàéí
-    //  êîíñòðóêòîð
-    = #cur_stack;
-}
-*/
-#define HASH
-#define LOG
-#define WITH_CANARY
+#include "Error.h"
+
 int StackCtor(struct stack* stk, size_t cpt)
     {
     assert(cpt);
@@ -42,11 +31,9 @@ int StackCtor(struct stack* stk, size_t cpt)
 
         stk->stack_first = canary_value;
         stk->stack_last  = canary_value;
-        printf("ADDRESS FIRST IS %p    %x", first_canary, *last_canary);
-        printf("Address is %p     %x\n", last_canary,  *last_canary);
 
     #else
-        stk->data = (elem*) calloc((stk->capacity)*sizeof(elem), 1); // stk->capacity is not initialized yet!
+        stk->data = (elem*) calloc((stk->capacity)*sizeof(elem), 1);
         if (stk->data == nullptr)
             {
             stk->capacity = 0;
@@ -54,19 +41,14 @@ int StackCtor(struct stack* stk, size_t cpt)
             }
         elem* left_elem = (stk->data);
     #endif
+
     stk->data = left_elem;
     stk->size = 0;
+
     #ifdef HASH
         ChangeHash(stk);
     #endif
-    //canary_t* last_canary1   = (canary_t*)((char*) stk->data + (stk->capacity) * sizeof(elem));
 
-    //fprintf(stderr, "last canary in data  is > %x\n", *last_canary1);
-    #ifdef WITH_CANARY
-        printf("Left canary: %d  %X\n", (elem*) first_canary - stk->data, *first_canary);
-        printf("Right canary: %d %X\n", (elem*) last_canary - stk->data,  *last_canary);
-
-    #endif
     VERIFY(stk)
     return (int)Error::NO_ERROR;
     }
@@ -92,6 +74,7 @@ int StackDtor(struct stack* stk)
         stk->data_hash   = 0;
         stk->struct_hash = 0;
     #endif
+
     return (int)Error::NO_ERROR;
     }
 
@@ -111,8 +94,8 @@ int StackPush(struct stack* stk, const elem value)
     #ifdef HASH
         ChangeHash(stk);
     #endif
-    VERIFY(stk)
 
+    VERIFY(stk)
     return (int)Error::NO_ERROR;
     }
 
@@ -124,6 +107,7 @@ int StackPop(struct stack* stk, elem* retvalue)
 
     *retvalue = (stk->data)[(stk->size)--];
     (stk->data)[(stk->size)] = 0;
+
     if ((stk->size) == (stk->capacity)/multiplier)
         {
         int newcapacity = (stk->capacity)/multiplier;
@@ -131,27 +115,25 @@ int StackPop(struct stack* stk, elem* retvalue)
             {
             newcapacity = 1;
             }
-
         StackRealloc(stk, newcapacity);
         }
 
     #ifdef HASH
         ChangeHash(stk);
     #endif
-    VERIFY(stk);
+    VERIFY(stk)
     return (int)Error::NO_ERROR;
     }
 
 //-----------------------------------------------------------------------------
 
-int StackOk(struct stack* stk)
+int StackOk(FILE* fp, struct stack* stk)
     {
-
     int result = 0;
+
     #ifdef HASH
         if (HashOkData(stk) == 0)
             {
-            printf("1\n");
             result |= (int)Error::ERROR_DATA;
             }
     #endif
@@ -159,7 +141,6 @@ int StackOk(struct stack* stk)
     #ifdef HASH
         if (HashOkStruct(stk) == 0)
             {
-            printf("2\n");
             result |= (int)Error::ERROR_STRUCT;
             }
     #endif
@@ -167,34 +148,18 @@ int StackOk(struct stack* stk)
     #ifdef WITH_CANARY
         if (stk->stack_first != canary_value or stk->stack_last != canary_value)
             {
-            printf("3\n");
             result |= (int)Error::ERROR_STRUCT_CANARY;
             }
+
         canary_t* first_canary  = (canary_t*)((char*) stk->data - sizeof(canary_t));
         canary_t* last_canary   = (canary_t*)((char*) stk->data + (stk->capacity) * sizeof(elem));
-        printf("first WITH_CANARY in data  is > %X\n", *first_canary);
-        printf("last WITH_CANARY in data  is > %X\n", *last_canary);
+
         if (*first_canary != canary_value)
             {
-            printf("4\n");
             result |= (int)Error::ERROR_DATA_CANARY;
             }
         if (*last_canary != canary_value)
             {
-            printf("\n");
-            printf("CANARY\n");
-            printf("%x\n", canary_value);
-            printf("%p\n", canary_value);
-            printf("%d\n", canary_value);
-            printf("FIRST\n");
-            printf("%p\n", *first_canary);
-            printf("%X\n", *first_canary);
-            printf("%lg\n", first_canary);
-            printf("LAST\n");
-            printf("%p\n", *last_canary);
-            printf("%X\n", *last_canary);
-            printf("%lg\n", last_canary);
-            printf("5\n");
             result |= (int)Error::ERROR_DATA_CANARY;
             }
     #endif
@@ -214,6 +179,8 @@ int StackOk(struct stack* stk)
         {
         result |= (int)Error::ERROR_STRUCT;
         }
+
+    PrintError(fp, result);
     return result;
     }
 
@@ -221,9 +188,9 @@ int StackOk(struct stack* stk)
 
 void StackDump(FILE* fp, struct stack* stk, const char* func, const char* file, const int line)
     {
-    canary_t* last_canary1   = (canary_t*)((char*) stk->data + (stk->capacity) * sizeof(elem));
+    //canary_t* last_canary1   = (canary_t*)((char*) stk->data + (stk->capacity) * sizeof(elem));
 
-    fprintf(stderr,"last canary in data  is > %x\n", *last_canary1);
+    //fprintf(stderr,"last canary in data  is > %x\n", *last_canary1);
     assert(stk);
     assert(func);
     assert(file);
@@ -237,10 +204,6 @@ void StackDump(FILE* fp, struct stack* stk, const char* func, const char* file, 
 
 
     #ifdef WITH_CANARY
-        canary_t* last_canary2   = (canary_t*)((char*) stk->data + (stk->capacity) * sizeof(elem));
-
-        fprintf(stderr,"last WITH_CANARY in data  is > %x\n", *last_canary2);
-
         fprintf(fp, "First canary in stack is %x\n", stk->stack_first);
         fprintf(fp, "size < %d\n", stk->size);
         fprintf(fp, "capacity = %d\n", stk->capacity);
@@ -264,8 +227,7 @@ void StackDump(FILE* fp, struct stack* stk, const char* func, const char* file, 
         PrintStack(fp, stk);
     #endif
 
-    fprintf(fp, "}\n");
-
+    fprintf(fp, "\n");
     }
 
 //-----------------------------------------------------------------------------
@@ -287,7 +249,7 @@ void PrintStack(FILE* fp, const struct stack *stk)
         fprintf(fp, "\n");
         }
 
-    printf("\n");
+    fprintf(fp, "\n");
     }
 
 //-----------------------------------------------------------------------------

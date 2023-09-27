@@ -2,6 +2,7 @@
 #define KEY_H_INCLUDED
 
 #include "Types.h"
+#include "Error.h"
 
 #define WITH_CANARY
 #define HASH
@@ -9,7 +10,7 @@
 
 #define STACK_DUMP(stk) StackDump(LOG_FILE, stk, __func__, __FILE__, __LINE__)
 
-#define VERIFY(stk) if (StackOk(stk) != 0)                        \
+#define VERIFY(stk) if (StackOk(LOG_FILE, stk) != 0)                        \
                         {                                         \
                         STACK_DUMP(stk);                          \
                         return (int) Error::ERROR_DATA;           \
@@ -34,7 +35,7 @@ int StackPop(struct stack* stk, elem* retvalue);
 int StackDtor(struct stack* stk);
 int StackRealloc(stack *stk, int newcapacity);
 int StackCtor(struct stack* stk, size_t cpt);
-int StackOk(struct stack* stk);
+int StackOk(FILE* fp, struct stack* stk);
 int StackPush(struct stack* stk, const elem value);
 
 static const canary_t canary_value = 0xDEADBEEF;
