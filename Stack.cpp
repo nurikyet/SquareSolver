@@ -87,7 +87,7 @@ int StackPush(struct stack* stk, const elem value)
         ChangeHash(stk);
     #endif
     VERIFY(stk)
-
+    (stk->size)++;
     if ((stk->size) >= (stk->capacity))
         {
         int newcapacity = multiplier*(stk->capacity);
@@ -203,9 +203,8 @@ int StackRealloc(struct stack *stk, int newcapacity)
     printf("start realloc\n");
     assert(stk);
     VERIFY(stk)
-
     #ifdef WITH_CANARY
-        void* check1 = (void*)realloc((char*)stk->data - sizeof(canary_t), newcapacity * sizeof(elem*) + 2*sizeof(canary_t));
+        void*check1 = (void*)realloc((char*)stk->data - sizeof(canary_t), newcapacity * sizeof(elem*) + 2*sizeof(canary_t));
         printf("\n%p\n", check1);
         printf("\n%p\n", stk->data);
         printf("\n%p\n", stk->data- sizeof(canary_t));
@@ -232,8 +231,8 @@ int StackRealloc(struct stack *stk, int newcapacity)
         *(last_canary)         = canary_value;
         printf("lc = %ul    lc = %X\n", *last_canary, *last_canary);
     #else
-        printf("else start");
-        void *check2 = (void*)realloc(stk->data, newcapacity * sizeof(elem*));
+        printf("else start\n");
+        void* check2 = (void*)realloc(stk->data, newcapacity * sizeof(elem*));
         if (check2 != nullptr)
             {
             stk->data = (elem*)check2;

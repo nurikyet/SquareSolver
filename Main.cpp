@@ -10,7 +10,7 @@ int main(const int argc, const char* argv[])
         OpenLog(argv[0]);
     #endif
     struct stack stk = {};
-    StackCtor(&stk, 10);
+    StackCtor(&stk, 2);
     StackPush(&stk, 1);
     StackPush(&stk, 2);
     StackPush(&stk, 3);
