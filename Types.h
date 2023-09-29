@@ -4,7 +4,7 @@
 #define printfelem "%lld"
 
 typedef long long elem;
-typedef unsigned long long canary_t;
+typedef unsigned long int canary_t;
 typedef unsigned int hash_t;
 
 

@@ -29,6 +29,10 @@ hash_t DataHash(struct stack* stk)
         data       = (elem*)((char*) data - sizeof(canary_t));
         data_size += 2 * sizeof(canary_t);
         hash       = SumHash ((stk->data), data_size);
+
+    #else
+        data  = (elem*)((char*) data;
+        hash  = SumHash ((stk->data), data_size);
     #endif
 
     return hash;
@@ -40,7 +44,6 @@ bool HashOkStruct(struct stack* stk)
     assert(stk);
     #ifdef HASH
         hash_t expected_hash = stk->struct_hash;
-
         return(expected_hash == StructHash(stk));
     #endif
     return false;
@@ -55,12 +58,9 @@ hash_t StructHash(struct stack* stk)
 
     #ifdef HASH
         hash_t third    = stk->struct_hash;
-        hash_t new_data = stk->data_hash;
-        stk->data_hash = 0;
         stk->struct_hash = 0;
 
         new_hash = SumHash(stk, sizeof(struct stack));
-        stk->data_hash = new_data;
         stk->struct_hash = third;
     #endif
 

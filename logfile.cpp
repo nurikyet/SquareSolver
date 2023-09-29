@@ -29,6 +29,9 @@ int OpenLog(const char* FILE_NAME)
     atexit(CloseLog);
     return 0;
     }
+
+//-----------------------------------------------------------------------------
+
 void CloseLog()
     {
     fprintf(LOG_FILE, "------------------------The work is completed----------------------------\n");

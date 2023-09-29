@@ -1,6 +1,10 @@
 #include <stdio.h>
 
+#include "Types.h"
+#include "Hash.h"
 #include "Stack.h"
+#include "logfile.h"
+#include "Error.h"
 
 void PrintError(FILE* fp, int result)
     {
@@ -18,10 +22,67 @@ void PrintError(FILE* fp, int result)
     #endif
     if (result && (int)Error::ERROR_CAPACITY != 0)
         fprintf(fp, "Capacity mast be > 0\n");
+
     if (result && (int)Error::ERROR_SIZE != 0)
         fprintf(fp, "Size mast be <= capacity\n");
+
     if (result && (int)Error::ERROR_DATA != 0)
         fprintf(fp, "address of data != nullptr\n");
+
     if (result && (int)Error::ERROR_STRUCT != 0)
         fprintf(fp, "address of struct != nullptr\n");
+    }
+
+//-----------------------------------------------------------------------------
+
+int StackOk(FILE* fp, struct stack* stk)
+    {
+    int result = 0;
+
+    #ifdef HASH
+        if (HashOkData(stk) == 0)
+            {
+            result |= (int)Error::ERROR_DATA;
+            }
+    #endif
+
+    #ifdef WITH_CANARY
+        if (stk->stack_first != canary_value or stk->stack_last != canary_value)
+            {
+            result |= (int)Error::ERROR_STRUCT_CANARY;
+            }
+
+        canary_t* first_canary  = (canary_t*)((char*) stk->data - sizeof(canary_t));
+        canary_t* last_canary   = (canary_t*)((char*) stk->data + (stk->capacity) * sizeof(elem));
+
+        if (*first_canary != canary_value)
+            {
+            result |= (int)Error::ERROR_DATA_CANARY;
+            }
+        if (*last_canary != canary_value)
+            {
+            printf("last in error(64) is %X", last_canary);
+            result |= (int)Error::ERROR_DATA_CANARY;
+            }
+    #endif
+    if (!stk->capacity)
+        {
+        result |= (int)Error::ERROR_CAPACITY;
+        }
+    if (!stk->size > stk->capacity)
+        {
+        result |= (int)Error::ERROR_SIZE;
+        }
+    if (!stk->data)
+        {
+        result |= (int)Error::ERROR_DATA;
+        }
+
+    if (stk == nullptr)
+        {
+        result |= (int)Error::ERROR_STRUCT;
+        }
+
+    PrintError(fp, result);
+    return result;
     }

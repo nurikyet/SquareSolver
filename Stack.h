@@ -10,33 +10,21 @@
 
 #define STACK_DUMP(stk) StackDump(LOG_FILE, stk, __func__, __FILE__, __LINE__)
 
-#define VERIFY(stk) if (StackOk(LOG_FILE, stk) != 0)                        \
+#define VERIFY(stk) if (StackOk(LOG_FILE, stk) != 0)              \
                         {                                         \
                         STACK_DUMP(stk);                          \
-                        return (int) Error::ERROR_DATA;           \
+                        return (int) Error::ERROR_STRUCT;         \
                         }
 
-/*
-Stack cur_stack;
-Stack_Ctor(&cur_stack, 10);
-STACK_CONSTRUCT(cur_stack, 10)
-{
-Stack cur_stack;//дефайн
-    //  конструктор
-    = #cur_stack;
-}
-*/
+void StackDump(FILE* fp, struct stack* stk, const char* func, const char* file, const int line); ///This function outputs all information about the stack status
+void PrintStack(FILE* fp, const stack *stk); ///This function outputs the entire stack to a file
 
-void StackDump(FILE* fp, struct stack* stk, const char* func, const char* file, const int line);
-void PrintStack(FILE* fp, const stack *stk);
+int StackPop(struct stack* stk, elem* retvalue); ///This function removes an element from the array
 
-int StackPop(struct stack* stk, elem* retvalue);
-
-int StackDtor(struct stack* stk);
-int StackRealloc(stack *stk, int newcapacity);
-int StackCtor(struct stack* stk, size_t cpt);
-int StackOk(FILE* fp, struct stack* stk);
-int StackPush(struct stack* stk, const elem value);
+int StackDtor(struct stack* stk); ///This function clears the buffer
+int StackRealloc(stack *stk, int newcapacity); ///This function changes the stack capacity when the size reaches it
+int StackCtor(struct stack* stk, size_t cpt);  ///This function initializes the structure
+int StackPush(struct stack* stk, const elem value); ///This function adds an element to the stack
 
 static const canary_t canary_value = 0xDEADBEEF;
 const int multiplier = 2;
@@ -52,7 +40,6 @@ struct stack
     elem* data;
 
     #ifdef HASH
-        //hash_f hash_func;
         hash_t data_hash;
         hash_t struct_hash;
     #endif
