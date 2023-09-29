@@ -4,14 +4,15 @@
 #include "Hash.h"
 #include "Stack.h"
 #include "Types.h"
+#include "logfile.h"
 
 bool HashOkData(struct stack* stk)
     {
-    #ifdef HASH
+    IF_HASH
+    (
         hash_t expected_hash = stk->data_hash;
-
         return(expected_hash == DataHash(stk));
-    #endif
+    )
     return false;
     }
 
@@ -25,15 +26,15 @@ hash_t DataHash(struct stack* stk)
     size_t data_size = stk->capacity * sizeof(elem);
     hash_t hash      = 0;
 
-    #ifdef WITH_CANARY
+    IF_CANARY
+    (
         data       = (elem*)((char*) data - sizeof(canary_t));
         data_size += 2 * sizeof(canary_t);
         hash       = SumHash ((stk->data), data_size);
-
-    #else
+    ,
         data  = (elem*)((char*) data;
         hash  = SumHash ((stk->data), data_size);
-    #endif
+    )
 
     return hash;
     }
@@ -42,10 +43,11 @@ hash_t DataHash(struct stack* stk)
 bool HashOkStruct(struct stack* stk)
     {
     assert(stk);
-    #ifdef HASH
+    IF_HASH
+    (
         hash_t expected_hash = stk->struct_hash;
         return(expected_hash == StructHash(stk));
-    #endif
+    )
     return false;
     }
 
@@ -56,13 +58,17 @@ hash_t StructHash(struct stack* stk)
     assert(stk);
     hash_t new_hash = 0;
 
-    #ifdef HASH
+    IF_HASH
+    (
+        hash_t data_new = stk->data_hash;
         hash_t third    = stk->struct_hash;
         stk->struct_hash = 0;
+        stk->data_hash = 0;
 
         new_hash = SumHash(stk, sizeof(struct stack));
         stk->struct_hash = third;
-    #endif
+        stk->data_hash =  data_new;
+    )
 
     return new_hash;
     }
@@ -71,17 +77,19 @@ hash_t StructHash(struct stack* stk)
 
 void ChangeHash(struct stack* stk)
     {
-    #ifdef HASH
+    IF_HASH
+    (
         stk->struct_hash = StructHash(stk);
         stk->data_hash   = DataHash(stk);
-    #endif
+    )
     }
 
 //-----------------------------------------------------------------------------
 
 hash_t SumHash (void* object , size_t len)
     {
-    #ifdef HASH
+    IF_HASH
+    (
     assert(object);
     const hash_t m = 0x5bd1e995;
     const hash_t seed = 0;
@@ -126,6 +134,6 @@ hash_t SumHash (void* object , size_t len)
     h ^= h >> 15;
 
     return h;
-    #endif
+    )
     }
 

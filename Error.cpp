@@ -11,8 +11,6 @@ void PrintError(FILE* fp, int result)
     #ifdef HASH
         if (result && (int)Error::ERROR_DATA != 0)
             fprintf(fp, "You have error in data, when you work with hash, please check your all addresses \n");
-    #endif
-    #ifdef HASH
         if (result && (int)Error::ERROR_STRUCT != 0)
             fprintf(fp, "You have error in struct, when you work with hash, please check your all addresses \n");
     #endif
@@ -21,10 +19,10 @@ void PrintError(FILE* fp, int result)
             fprintf(fp, "You have error in canary of data, please check your all addresses \n");
     #endif
     if (result && (int)Error::ERROR_CAPACITY != 0)
-        fprintf(fp, "Capacity mast be > 0\n");
+        fprintf(fp, "Capacity must be > 0\n");
 
     if (result && (int)Error::ERROR_SIZE != 0)
-        fprintf(fp, "Size mast be <= capacity\n");
+        fprintf(fp, "Size must be <= capacity\n");
 
     if (result && (int)Error::ERROR_DATA != 0)
         fprintf(fp, "address of data != nullptr\n");
@@ -61,7 +59,7 @@ int StackOk(FILE* fp, struct stack* stk)
             }
         if (*last_canary != canary_value)
             {
-            printf("last in error(64) is %X", last_canary);
+            //printf("last in error(64) is %X", last_canary);
             result |= (int)Error::ERROR_DATA_CANARY;
             }
     #endif

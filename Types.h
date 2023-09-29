@@ -7,6 +7,4 @@ typedef long long elem;
 typedef unsigned long int canary_t;
 typedef unsigned int hash_t;
 
-
-
 #endif // TYPES_H_INCLUDED
