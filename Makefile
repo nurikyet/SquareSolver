@@ -12,6 +12,7 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
 
 # TODO: What if header changes? Will your necessary file automatically recompile, or won't it?
+#       DO NOT IGNORE ME
 .cpp.o:
 	$(CC) $(CFLAGS) $< -o $@
 

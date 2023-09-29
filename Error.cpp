@@ -21,6 +21,11 @@ void PrintError(FILE* fp, int result)
     if (result && (int)Error::ERROR_CAPACITY != 0)
         fprintf(fp, "Capacity must be > 0\n");
 
+    // TODO: smth like ... if ((result & (int)Error::ERROR_SIZE) != 0)
+    //       HOW DID YOU EVEN TEST THIS IT DOESN'T WORK IN _ANY_
+    //       CASE, ___ANY___, EXCEPT! EXCEPT CASE WHERE EVERYTHING IS OK
+
+    //       Nuriya -- the tester!
     if (result && (int)Error::ERROR_SIZE != 0)
         fprintf(fp, "Size must be <= capacity\n");
 
@@ -50,7 +55,7 @@ int StackOk(FILE* fp, struct stack* stk)
             result |= (int)Error::ERROR_STRUCT_CANARY;
             }
 
-        canary_t* first_canary  = (canary_t*)((char*) stk->data - sizeof(canary_t));
+        canary_t* first_canary  = (canary_t*)((char*) stk->data - sizeof(canary_t)); // TODO: Extraaaaaaaaaaaaaaaaaaaaaaaact
         canary_t* last_canary   = (canary_t*)((char*) stk->data + (stk->capacity) * sizeof(elem));
 
         if (*first_canary != canary_value)

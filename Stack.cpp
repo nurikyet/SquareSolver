@@ -22,6 +22,7 @@ int StackCtor(struct stack* stk, size_t cpt)
             return (int)Error::ERROR_MEMORY;
             }
 
+	// TODO: Extract!
         elem* left_elem        = (elem*)((char*)(stk->data) + sizeof(canary_t));
         canary_t* first_canary = (canary_t*)(stk->data);
         canary_t* last_canary  = (canary_t*) ((char*)(stk->data) + (stk->capacity) * sizeof(elem) + sizeof(canary_t));
@@ -31,7 +32,7 @@ int StackCtor(struct stack* stk, size_t cpt)
         stk->stack_first = canary_value;
         stk->stack_last  = canary_value;
     ,
-        stk->data = (elem*) calloc((stk->capacity)*sizeof(elem), 1);
+        stk->data = (elem*) calloc((stk->capacity)*sizeof(elem), 1); // TODO: Do not duplicate! COPIPASTA BL
         if (stk->data == nullptr)
             {
             stk->capacity = 0;
@@ -40,7 +41,7 @@ int StackCtor(struct stack* stk, size_t cpt)
         elem* left_elem = (stk->data);
     )
 
-    stk->data = left_elem;
+    stk->data = left_elem; // TODO: Named designators, learn about them!
     stk->size = 0;
 
     IF_HASH(ChangeHash(stk);)
@@ -58,7 +59,7 @@ int StackDtor(struct stack* stk)
     IF_CANARY
     (
         free((char*)stk->data - sizeof(canary_t));
-        stk->stack_first  = 0;
+        stk->stack_first  = 0; // TODO: *stk = {}?
         stk->stack_last   = 0;
     ,
         free(stk->data);
@@ -86,7 +87,7 @@ int StackPush(struct stack* stk, const elem value)
 
     if ((stk->size) >= (stk->capacity))
         {
-        int newcapacity = MULTIPLIER*(stk->capacity);
+	int newcapacity = MULTIPLIER*(stk->capacity); // TODO: another naming style, yet another one!
 
         StackRealloc(stk, newcapacity);
         }
@@ -104,7 +105,7 @@ int StackPop(struct stack* stk, elem* retvalue)
     {
     VERIFY(stk)
 
-    (stk->size)--;
+    (stk->size)--; // TODO: Why so much CRUGLIE SCOBOCHKI?
     *retvalue = (stk->data)[(stk->size)];
     (stk->data)[(stk->size)] = 0;
 
@@ -186,7 +187,7 @@ void PrintStack(FILE* fp, const struct stack *stk)
 
 //-----------------------------------------------------------------------------
 
-int StackRealloc(struct stack *stk, int newcapacity)
+int StackRealloc(struct stack *stk, int newcapacity) // TODO: I don't even wanna look, clean up mess...
     {
     printf("start realloc\n");
     assert(stk);

@@ -9,23 +9,28 @@
 
 FILE* LOG_FILE = stderr;
 
-int OpenLog(const char* FILE_NAME)
+
+int OpenLog(const char* FILE_NAME) // TODO: Why capitalize?
     {
-    char* file_name = strdup(FILE_NAME);
-    LOG_FILE = fopen(strncat(file_name, EXTENSION, MAX_LEN), "a");
+    char* file_name = strdup(FILE_NAME); // TODO: you have a memory leak!
+    LOG_FILE = fopen(strncat(file_name, EXTENSION, MAX_LEN), "a"); // TODO: Do you see SEGFAULT? But it's there!
     if (LOG_FILE == nullptr)
         {
+	// TODO: Read about errno, perror, strerror and friends
+	//       learn how to handle errors!
+
         LOG_FILE = stderr;
         }
     time_t now = 0;
     time(&now);
     fprintf(LOG_FILE, "------------------------------START AT %s--------------------------------\n", ctime(&now));
 
+    // TODO: What does log has to do with CANARY? Whyyyy?
     IF_CANARY(fprintf(LOG_FILE, "Work with CANARY\n");, ;)
 
     IF_HASH(fprintf(LOG_FILE, "Work with HASH\n"););
 
-    atexit(CloseLog);
+    atexit(CloseLog); // TODO: You are brave
     return 0;
     }
 
