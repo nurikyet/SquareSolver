@@ -27,7 +27,7 @@ int StackCtor(struct stack* stk, size_t cpt)
         canary_t* last_canary  = (canary_t*) ((char*)(stk->data) + (stk->capacity) * sizeof(elem) + sizeof(canary_t));
         *first_canary = canary_value;
         *last_canary  = canary_value;
-        printf("last in stack(30) is %X", last_canary);
+        printf("last in stack(30) is %X\n", last_canary);
 
         stk->stack_first = canary_value;
         stk->stack_last  = canary_value;
@@ -58,17 +58,18 @@ int StackCtor(struct stack* stk, size_t cpt)
 int StackDtor(struct stack* stk)
     {
     VERIFY(stk)
-    free(stk->data);
+
+    #ifdef WITH_CANARY
+        free((char*)stk->data - sizeof(canary_t));
+        stk->stack_first  = 0;
+        stk->stack_last   = 0;
+    #else
+        free(stk->data);
+    #endif
 
     stk->data     = nullptr;
     stk->size     = 0;
     stk->capacity = 0;
-
-    #ifdef WITH_CANARY
-        stk->stack_first  = 0;
-        stk->stack_last   = 0;
-
-    #endif
 
     #ifdef HASH
         stk->data_hash   = 0;
@@ -206,12 +207,15 @@ int StackRealloc(struct stack *stk, int newcapacity)
     #ifdef WITH_CANARY
         void* check1 = (void*)realloc((char*)stk->data - sizeof(canary_t), newcapacity * sizeof(elem*) + 2*sizeof(canary_t));
         printf("\n%p\n", check1);
+        printf("\n%p\n", stk->data);
+        printf("\n%p\n", stk->data- sizeof(canary_t));
         if (check1 != nullptr)
                 {
                 stk->data = (elem*)check1;
                 }
             else
                 {
+                StackDtor(stk);
                 #ifdef HASH
                     ChangeHash(stk);
                 #endif
