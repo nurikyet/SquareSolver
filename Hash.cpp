@@ -22,20 +22,16 @@ hash_t DataHash(struct stack* stk)
     {
     assert(stk);
 
-    elem* data       = stk->data;
-    size_t data_size = stk->capacity * sizeof(elem);
+    elem_t* data       = stk->data;
+    size_t data_size = stk->capacity * sizeof(elem_t);
     hash_t hash      = 0;
 
     IF_CANARY
     (
-        data       = (elem*)((char*) data - sizeof(canary_t));
+        data       = (elem_t*)((char*) data - sizeof(canary_t));
         data_size += 2 * sizeof(canary_t);
-        hash       = SumHash ((stk->data), data_size);
-    ,
-        data  = (elem*)((char*) data;
-        hash  = SumHash ((stk->data), data_size);
     )
-
+    hash  = SumHash (data, data_size);
     return hash;
     }
 //-----------------------------------------------------------------------------
@@ -90,50 +86,50 @@ hash_t SumHash (void* object , size_t len)
     {
     IF_HASH
     (
-    assert(object);
-    const hash_t m = 0x5bd1e995;
-    const hash_t seed = 0;
-    const int r = 24;
+        assert(object);
+        const hash_t m = 0x5bd1e995;
+        const hash_t seed = 0;
+        const int r = 24;
 
-    hash_t h = seed ^ len;
+        hash_t h = seed ^ len;
 
-    const unsigned char * data = (const unsigned char *)object;
-    hash_t k = 0;
+        const unsigned char * data = (const unsigned char *)object;
+        hash_t k = 0;
 
-   while (len >= 4)
-        {
-	k  = data[0]; // TODO: Kakie imena klassniye (net) (nope)
-        k |= data[1] << 8;
-        k |= data[2] << 16;
-        k |= data[3] << 24;
+       while (len >= 4)
+            {
+            k  = data[0];
+            k |= data[1] << 8;
+            k |= data[2] << 16;
+            k |= data[3] << 24;
 
-        k *= m;
-        k ^= k >> r;
-        k *= m;
+            k *= m;
+            k ^= k >> r;
+            k *= m;
 
+            h *= m;
+            h ^= k;
+
+            data += 4;
+            len -= 4;
+            }
+
+        switch (len)
+            {
+            case 3:
+            h ^= data[2] << 16;
+            case 2:
+            h ^= data[1] << 8;
+            case 1:
+            h ^= data[0];
+            h *= m;
+            };
+
+        h ^= h >> 13;
         h *= m;
-        h ^= k;
+        h ^= h >> 15;
 
-        data += 4;
-        len -= 4;
-        }
-
-    switch (len)
-        {
-        case 3:
-        h ^= data[2] << 16;
-        case 2:
-        h ^= data[1] << 8;
-        case 1:
-        h ^= data[0];
-        h *= m;
-        };
-
-    h ^= h >> 13;
-    h *= m;
-    h ^= h >> 15;
-
-    return h;
+        return h;
     )
     }
 
