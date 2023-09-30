@@ -10,28 +10,28 @@ void PrintError(FILE* fp, int result)
     {
     IF_HASH
     (
-        if (result && (int)Error::ERROR_DATA != 0)
+        if (result & (int)Error::ERROR_DATA != 0)
             fprintf(fp, "You have error in data, when you work with hash, please check your all addresses \n");
-        if (result && (int)Error::ERROR_STRUCT != 0)
+        if (result & (int)Error::ERROR_STRUCT != 0)
             fprintf(fp, "You have error in struct, when you work with hash, please check your all addresses \n");
     )
 
     IF_CANARY
     (
-        if (result && (int)Error::ERROR_DATA_CANARY != 0)
+        if (result & (int)Error::ERROR_DATA_CANARY != 0)
             fprintf(fp, "You have error in canary of data, please check your all addresses \n");
     )
 
-    if (result && (int)Error::ERROR_CAPACITY != 0)
+    if (result & (int)Error::ERROR_CAPACITY != 0)
         fprintf(fp, "Capacity must be > 0\n");
 
-    if (result && (int)Error::ERROR_SIZE != 0)
+    if (result & (int)Error::ERROR_SIZE != 0)
         fprintf(fp, "Size must be <= capacity\n");
 
-    if (result && (int)Error::ERROR_DATA != 0)
+    if (result & (int)Error::ERROR_DATA != 0)
         fprintf(fp, "address of data != nullptr\n");
 
-    if (result && (int)Error::ERROR_STRUCT != 0)
+    if (result & (int)Error::ERROR_STRUCT != 0)
         fprintf(fp, "address of struct != nullptr\n");
     }
 
