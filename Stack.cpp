@@ -102,10 +102,10 @@ int StackPop(struct stack* stk, elem_t* retvalue)
 
     (stk->size)--;
     *retvalue = (stk->data)[(stk->size)];
-    (stk->data)[(stk->size)] = 0;
+    (stk->data)[(stk->size)] = 0;                               // Poison instead of just 0
 
-    if ((stk->size) == (stk->capacity)/(DOUBLE*MULTIPLIER))
-        {
+    if ((stk->size) == (stk->capacity)/(DOUBLE*MULTIPLIER))     // 1) why DOUBLE * MULTIPLIER instead of just MULTIPLIER?
+        {                                                       // 2) what if size smaller than capacity / resize_coefficient ? we also want to reduce capacity in this case...
         int new_capacity = (stk->capacity)/MULTIPLIER;
         if (new_capacity == 0)
             {
@@ -197,8 +197,8 @@ int StackRealloc(struct stack *stk, int new_capacity)
             }
         else
             {
-            StackDtor(stk);
-            IF_HASH(ChangeHash(stk);)
+            StackDtor(stk);             // do we need to immediately destroy stack if realloc did not succeed? can't we just leave stack in previous condition instead,
+            IF_HASH(ChangeHash(stk);)   // print(!) that memory allocation mistake took place to our logs (do at least fprintf) and return ERROR_MEMORY?
             return (int) Error::ERROR_MEMORY;
             }
 
@@ -207,13 +207,13 @@ int StackRealloc(struct stack *stk, int new_capacity)
     IF_CANARY
     (
         left_elem += sizeof(canary_t);
-        *((canary_t*)((char*)(stk->data) + (stk->capacity)*sizeof(elem_t) + sizeof(canary_t))) = 0;
+        *((canary_t*)((char*)(stk->data) + (stk->capacity)*sizeof(elem_t) + sizeof(canary_t))) = 0; // also Poison instead of just 0
         canary_t* first_canary = (canary_t*) ((char*)(stk->data));
         canary_t* last_canary  = (canary_t*) ((char*)(stk->data) + new_capacity * sizeof(elem_t) + sizeof(canary_t));
         *(last_canary)         = canary_value;
     )
 
-    if (stk->data == nullptr)
+    if (stk->data == nullptr)   // hmm, this would never work as you do return on line 202
         {
         stk->capacity = 0;
         stk->size     = 0;

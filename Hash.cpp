@@ -22,10 +22,12 @@ hash_t DataHash(struct stack* stk)
     {
     assert(stk);
 
-    elem_t* data       = stk->data;
+    elem_t* data     = stk->data;
     size_t data_size = stk->capacity * sizeof(elem_t);
     hash_t hash      = 0;
-
+                                                                        // if I'm not mistaken, here's your vulnerability with data_hash, where you recalculate it
+                                                                        // having old hash in data_hash field; when the person who found this vulnerability puts it
+                                                                        // into issue on Github, you are to correct it!
     IF_CANARY
     (
         data       = (elem_t*)((char*) data - sizeof(canary_t));
@@ -82,7 +84,7 @@ void ChangeHash(struct stack* stk)
 
 //-----------------------------------------------------------------------------
 
-hash_t SumHash (void* object , size_t len)
+hash_t SumHash (void* object, size_t len)
     {
     IF_HASH
     (

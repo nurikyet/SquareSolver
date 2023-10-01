@@ -8,6 +8,10 @@
 #define HASH
 #define LOG
 
+// hey, what about STACK_CONSTRUCT define? :(
+//#define STACK_CONSTRUCT(stack_variable_name) ...
+
+// no need to add ; after code btw
 #ifdef WITH_CANARY
     #define IF_CANARY(code) code;
 #else
@@ -21,6 +25,7 @@
 #endif
 
 #define STACK_DUMP(stk) StackDump(LOG_FILE, stk, __func__, __FILE__, __LINE__)
+                                                                                        // hey, let's return StackOk result from VERIFY, not ERROR_STRUCT each time!
 #define VERIFY(stk) if (StackOk(LOG_FILE, stk) != 0)                  \
                             {                                         \
                             STACK_DUMP(stk);                          \
@@ -41,10 +46,11 @@ int StackPush(struct stack* stk, const elem_t value);                           
 
 const canary_t canary_value = 0xDEADBEEF;
 const int MULTIPLIER = 2;
-const int DOUBLE = 2;
+const int DOUBLE = 2;       // const int DOUBLE = 2     wtf
 
 struct stack
     {
+                                    // #ifdef from the very beginning of the string; this can also be replaced by IF_CANARY() :)
     #ifdef WITH_CANARY
         canary_t stack_first;
     #endif
@@ -65,10 +71,10 @@ struct stack
 
 enum class Error
     {
-    NO_ERROR            = 0,
-    ERROR_SIZE          = 1,
-    ERROR_CAPACITY      = 2,
-    ERROR_DATA          = 4,
+    NO_ERROR            = 0,       
+    ERROR_SIZE          = 1,        // why not 1 << 0
+    ERROR_CAPACITY      = 2,        //         1 << 1
+    ERROR_DATA          = 4,        // etc.? looks more understandable
     ERROR_MEMORY        = 8,
     ERROR_DATA_CANARY   = 16,
     ERROR_STRUCT_CANARY = 32,
