@@ -17,6 +17,7 @@ int OpenLog(const char* FILE_NAME)
         {
         printf("Too long file name\n");
         }
+    file_name = strcpy(FILE_NAME);
     LOG_FILE = fopen(strncat(file_name, EXTENSION, MAX_LEN), "a");
 
     time_t now = 0;
