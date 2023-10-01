@@ -34,22 +34,90 @@
                         }                                             \
                     }
 
-void StackDump(FILE* fp, struct stack* stk, const char* func, const char* file, const int line); ///This function outputs all information about the stack status
-void PrintStack(FILE* fp, const stack *stk);                                                     ///This function outputs the entire stack to a file
+
+//! @brief prints all stack data in file
+//! @param [in] stk all structure data
+//! @param [in] file the file from which it was called
+//! @param [in] line the line from which it was called
+//! @param [in] function the function from which it was called
+//!
+//! makes a complete printout of the stack and its data
+void StackDump(FILE* fp, struct stack* stk, const char* func, const char* file, const int line);
+
+//! @brief prints all stack data
+//! @param [in] stk all structure data
+//! @param [in] file the file from which it was called
+//!
+//! makes a complete printout of the stack and its data
+void PrintStack(FILE* fp, const stack *stk);
+
+//! @brief prints all stack data in console
+//! @param [in] stk all structure data
+//!
+//! makes a complete printout of the stack and its data
 void PrintInConsol(const struct stack *stk);
 
-int StackPop(struct stack* stk, elem_t* retvalue);                                               ///This function removes an element from the array
+//! @brief deletes elements to the stack
+//! @param [in]  stk all structure data
+//! @param [out] ans stack element that is removed and returned
+//!
+//! returns and removes elements from the stack
+int StackPop(struct stack* stk, elem_t* retvalue);
 
-int StackDtor(struct stack* stk);                                                                ///This function clears the buffer
-int StackRealloc(stack *stk, int newcapacity);                                                   ///This function changes the stack capacity when the size reaches it
-int StackCtor(struct stack* stk, size_t cpt);                                                    ///This function initializes the structure
-int StackPush(struct stack* stk, const elem_t value);                                            ///This function adds an element to the stack
+//! @brief destroys all stack data
+//! @param [in] stk all structure data
+//!
+//! resets all data and stack pointers
+int StackDtor(struct stack* stk);
+
+int StackRealloc(stack *stk, int newcapacity);
+
+//! @brief creator of all data on the stk
+//! @param [in] stk all structure data
+//!
+//! sets initial parameters for the structure and allocates memory for the initial stack size
+int StackCtor(struct stack* stk, size_t cpt);
+
+//
+//! @brief adding elements to the stack
+//! @param [in] stk all structure data
+//!
+//! adds elements to the stack and increases the stack size
+int StackPush(struct stack* stk, const elem_t value);
 
 const canary_t canary_value = 0xDEADBEEF;
+
+/**
+ * @brief unused elements constant
+ *
+ * if the stack element is not yet defined, then this value is used as the value of the element
+ */
 const elem_t POISON = -777;
+
+/**
+ * @brief constant realloc
+ *
+ * denotes how many times the stack size needs to be increased when new memory is allocated
+ */
 const int REALLOC_MORE_MEMORY_MULTIPLIER = 3;
+
+/**
+ * @brief constant realloc
+ *
+ * denotes how many times the stack size needs to be reduced when allocating new memory
+ */
 const int REALLOC_LESS_MEMORY_MULTIPLIER = 2;
 
+/**
+ * @brief               Elements needed to work in a stack
+ * @param stack_first   canary at the beginning of the struct
+ * @param size          stack size
+ * @param capacity      stack volume
+ * @param data          data array
+ * @param data_hash     data hash
+ * @param struct_hash   stack hash
+ * @param stack_last    canary at the ending of the struct
+ */
 struct stack
     {
     const char* name;
