@@ -66,7 +66,6 @@ int StackOk(FILE* fp, struct stack* stk)
             }
         if (*last_canary != canary_value)
             {
-            //printf("last in error(64) is %X", last_canary);
             result |= (int)Error::ERROR_DATA_CANARY;
             }
     )
