@@ -26,11 +26,12 @@
 
 #define STACK_DUMP(stk) StackDump(LOG_FILE, stk, __func__, __FILE__, __LINE__)
 #define VERIFY(stk) {int error = StackOk(LOG_FILE, stk);              \
-                        if (error) > 0)                               \
-                            {                                         \
-                            STACK_DUMP(stk);                          \
-                            return err;                               \
-                            }                                         \
+                    if (error != 0)                                   \
+                        {                                             \
+                        PrintError(LOG_FILE, error);                  \
+                        STACK_DUMP(stk);                              \
+                        return error;                                 \
+                        }                                             \
                     }
 
 void StackDump(FILE* fp, struct stack* stk, const char* func, const char* file, const int line); ///This function outputs all information about the stack status
