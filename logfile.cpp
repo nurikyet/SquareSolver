@@ -10,14 +10,14 @@
 FILE* LOG_FILE = stderr;
 static const char* EXTENSION = ".log";
 
-int OpenLog(const char* FILE_NAME)
+int OpenLog(const char* my_file)
     {
-    char* file_name = calloc(strlen(FILE_NAME) + strlen(EXTENSION) + 1, 1);
+    char* file_name = calloc(strlen(my_file) + strlen(EXTENSION) + 1, 1);
     if (file_name == NULL)
         {
         printf("Too long file name\n");
         }
-    file_name = strcpy(FILE_NAME);
+    strncpy(file_name, my_file, MAX_LEN);
     LOG_FILE = fopen(strncat(file_name, EXTENSION, MAX_LEN), "a");
 
     time_t now = 0;
