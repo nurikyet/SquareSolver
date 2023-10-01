@@ -4,13 +4,13 @@
 #include "Types.h"
 #include "Error.h"
 
+#define STACK_CONSTRUCT(nick, quantity) struct stack nick = {};          \
+                                        StackCtor(&nick, quantity);      \
+                                        nick.name = #nick;
+
 #define WITH_CANARY
 #define HASH
 #define LOG
-
-#define STACK_CONSTRUCT(name, quantity) struct Stack name = {};          \
-                                        StackCtor(&name, quantity);      \
-                                        name.name = #name;
 
 #ifdef WITH_CANARY
     #define IF_CANARY(code) code;
@@ -46,8 +46,9 @@ int StackCtor(struct stack* stk, size_t cpt);                                   
 int StackPush(struct stack* stk, const elem_t value);                                            ///This function adds an element to the stack
 
 const canary_t canary_value = 0xDEADBEEF;
-const int MULTIPLIER1 = 3;
-const int MULTIPLIER2 = 2;
+const elem_t POISON = -777;
+const int REALLOC_MORE_MEMORY_MULTIPLIER = 3;
+const int REALLOC_LESS_MEMORY_MULTIPLIER = 2;
 
 struct stack
     {

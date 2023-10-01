@@ -7,7 +7,7 @@
 #include "Stack.h"
 
 extern FILE* LOG_FILE;
-static const int MAX_LEN = 1000;
+static const int MAX_LEN = 256;
 
 int OpenLog(const char* FILE_NAME);
 void CloseLog();

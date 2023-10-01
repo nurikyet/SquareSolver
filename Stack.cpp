@@ -35,6 +35,7 @@ int StackCtor(struct stack* stk, size_t cpt)
     if (stk->data == nullptr)
                 {
                 stk->capacity = 0;
+                fprintf(LOG_FILE, "Function %s: not enough memory to allocate", __func__);
                 return (int)Error::ERROR_MEMORY;
                 }
 
@@ -82,7 +83,7 @@ int StackPush(struct stack* stk, const elem_t value)
 
     if ((stk->size) >= (stk->capacity))
         {
-        int new_capacity = MULTIPLIER1*(stk->capacity);
+        int new_capacity = REALLOC_MORE_MEMORY_MULTIPLIER*(stk->capacity);
 
         StackRealloc(stk, new_capacity);
         }
@@ -102,11 +103,11 @@ int StackPop(struct stack* stk, elem_t* retvalue)
 
     (stk->size)--;
     *retvalue = (stk->data)[(stk->size)];
-    (stk->data)[(stk->size)] = -777;
+    (stk->data)[(stk->size)] = POISON;
 
-    if ((stk->size) == (stk->capacity)/(MULTIPLIER2))
+    if ((stk->size) == (stk->capacity)/(REALLOC_LESS_MEMORY_MULTIPLIER))
         {
-        int new_capacity = (stk->capacity)/MULTIPLIER2;
+        int new_capacity = (stk->capacity)/REALLOC_LESS_MEMORY_MULTIPLIER;
         if (new_capacity == 0)
             {
             new_capacity = 1;
@@ -198,7 +199,8 @@ int StackRealloc(struct stack *stk, int new_capacity)
     else
         {
         IF_HASH(ChangeHash(stk);)
-        STACK_DUMP(stk)
+        STACK_DUMP(stk);
+        fprintf(LOG_FILE, "Function %s: not enough memory to allocate", __func__);
         return (int) Error::ERROR_MEMORY;
         }
 
@@ -207,7 +209,7 @@ int StackRealloc(struct stack *stk, int new_capacity)
     IF_CANARY
     (
         left_elem += sizeof(canary_t);
-        *((canary_t*)((char*)(stk->data) + (stk->capacity)*sizeof(elem_t) + sizeof(canary_t))) = -777;
+        *((canary_t*)((char*)(stk->data) + (stk->capacity)*sizeof(elem_t) + sizeof(canary_t))) = POISON;
         canary_t* first_canary = (canary_t*) ((char*)(stk->data));
         canary_t* last_canary  = (canary_t*) ((char*)(stk->data) + new_capacity * sizeof(elem_t) + sizeof(canary_t));
         *(last_canary)         = canary_value;

@@ -12,7 +12,7 @@ static const char* EXTENSION = ".log";
 
 int OpenLog(const char* FILE_NAME)
     {
-    char* file_name = strndup(FILE_NAME, MAX_LEN);
+    char* file_name = strdup(FILE_NAME + sizeof(EXTENSION));
     if (file_name == NULL)
         {
         printf("Too long file name\n");
