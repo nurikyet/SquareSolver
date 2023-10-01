@@ -7,10 +7,13 @@
 #include "Error.h"
 
 void PrintError(FILE* fp, int result)
-    {
+    {                                               // assert on fp
     IF_HASH
     (
-        if (result & (int)Error::ERROR_DATA != 0)
+        if (result & (int)Error::ERROR_DATA != 0)   // hey, have you ever tested how your PrintError function works? :(   now experssion under if is equivalent
+                                                    // to (result & ((int)Error::ERROR_DATA != 0)), which works if and only if result's least significant bit is 1,
+                                                    // but you obviously wanted something like ((result & (int)Error::ERROR_DATA) != 0)
+                                                    // P.S. here's even WARNING, don't you pay attention to them? :(
             fprintf(fp, "You have error in data, when you work with hash, please check your all addresses \n");
         if (result & (int)Error::ERROR_STRUCT != 0)
             fprintf(fp, "You have error in struct, when you work with hash, please check your all addresses \n");
@@ -68,11 +71,11 @@ int StackOk(FILE* fp, struct stack* stk)
             result |= (int)Error::ERROR_DATA_CANARY;
             }
     )
-    if (!stk->capacity)
+    if (!stk->capacity)         // hmm, it's when capacity != 0? maybe < 0 instead...
         {
         result |= (int)Error::ERROR_CAPACITY;
         }
-    if (!stk->size > stk->capacity)
+    if (!stk->size > stk->capacity)     // WARNING: why there is ! in if?
         {
         result |= (int)Error::ERROR_SIZE;
         }

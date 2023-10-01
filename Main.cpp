@@ -7,6 +7,7 @@
 
 int main(const int argc, const char* argv[])
     {
+// preprocessor directives and conditional compilation directives are usually written from the very beginning of the line
     #ifdef LOG
         OpenLog(argv[0]);
     #endif

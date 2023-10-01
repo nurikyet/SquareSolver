@@ -13,6 +13,8 @@ $(EXECUTABLE): $(OBJECTS)
 
 # TODO: What if header changes? Will your necessary file automatically recompile, or won't it?
 #       DO NOT IGNORE ME
+# Kirill, hint: .cpp.o might be rewritten like %.o : %.cpp
+# Sasha's question is actual: do we need to add dependency of header file (%.h) to .o file generation? will version without %.h react to changes in corresponding header?
 .cpp.o:
 	$(CC) $(CFLAGS) $< -o $@
 
