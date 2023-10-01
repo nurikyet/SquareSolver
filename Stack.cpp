@@ -82,7 +82,7 @@ int StackPush(struct stack* stk, const elem_t value)
 
     if ((stk->size) >= (stk->capacity))
         {
-        int new_capacity = MULTIPLIER*(stk->capacity);
+        int new_capacity = MULTIPLIER1*(stk->capacity);
 
         StackRealloc(stk, new_capacity);
         }
@@ -102,11 +102,11 @@ int StackPop(struct stack* stk, elem_t* retvalue)
 
     (stk->size)--;
     *retvalue = (stk->data)[(stk->size)];
-    (stk->data)[(stk->size)] = 0;
+    (stk->data)[(stk->size)] = -777;
 
-    if ((stk->size) == (stk->capacity)/(DOUBLE*MULTIPLIER))
+    if ((stk->size) == (stk->capacity)/(MULTIPLIER2))
         {
-        int new_capacity = (stk->capacity)/MULTIPLIER;
+        int new_capacity = (stk->capacity)/MULTIPLIER2;
         if (new_capacity == 0)
             {
             new_capacity = 1;
@@ -192,34 +192,26 @@ int StackRealloc(struct stack *stk, int new_capacity)
 
     elem_t *check = (elem_t*)realloc(stk->data, data_size);
     if (check != nullptr)
-            {
-            stk->data = check;
-            }
-        else
-            {
-            StackDtor(stk);
-            IF_HASH(ChangeHash(stk);)
-            return (int) Error::ERROR_MEMORY;
-            }
+        {
+        stk->data = check;
+        }
+    else
+        {
+        IF_HASH(ChangeHash(stk);)
+        STACK_DUMP(stk)
+        return (int) Error::ERROR_MEMORY;
+        }
 
     elem_t* left_elem = (elem_t*)((char*)(stk->data));
 
     IF_CANARY
     (
         left_elem += sizeof(canary_t);
-        *((canary_t*)((char*)(stk->data) + (stk->capacity)*sizeof(elem_t) + sizeof(canary_t))) = 0;
+        *((canary_t*)((char*)(stk->data) + (stk->capacity)*sizeof(elem_t) + sizeof(canary_t))) = -777;
         canary_t* first_canary = (canary_t*) ((char*)(stk->data));
         canary_t* last_canary  = (canary_t*) ((char*)(stk->data) + new_capacity * sizeof(elem_t) + sizeof(canary_t));
         *(last_canary)         = canary_value;
     )
-
-    if (stk->data == nullptr)
-        {
-        stk->capacity = 0;
-        stk->size     = 0;
-        IF_HASH(ChangeHash(stk);)
-        return (int) Error::ERROR_MEMORY;
-        }
 
     stk->data     = left_elem;
     stk->capacity = new_capacity;

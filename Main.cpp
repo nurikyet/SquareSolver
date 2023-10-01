@@ -7,25 +7,22 @@
 
 int main(const int argc, const char* argv[])
     {
-    #ifdef LOG
-        OpenLog(argv[0]);
-    #endif
-    struct stack stk = {};
-    StackCtor(&stk, 20);
+#ifdef LOG
+    OpenLog(argv[0]);
+#endif
 
+    STACK_CONSTRUCT(stk, 20);
     StackPush(&stk, 1);
     StackPush(&stk, 2);
     StackPush(&stk, 3);
-        //PrintInConsol(&stk);
     StackPush(&stk, 4);
     StackPush(&stk, 5);
-        //PrintInConsol(&stk);
     StackPush(&stk, 6);
 
     printf("\n hash in struct is %d\n", stk.struct_hash);
     hash_t k = SumHash(&stk, sizeof(struct stack));
     printf("SumHash is %u\n", k);
-    //PrintInConsol(&stk);
+
     STACK_DUMP(&stk);
     StackDtor(&stk);
     }

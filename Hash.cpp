@@ -22,7 +22,7 @@ hash_t DataHash(struct stack* stk)
     {
     assert(stk);
 
-    elem_t* data       = stk->data;
+    elem_t* data     = stk->data;
     size_t data_size = stk->capacity * sizeof(elem_t);
     hash_t hash      = 0;
 
@@ -82,7 +82,7 @@ void ChangeHash(struct stack* stk)
 
 //-----------------------------------------------------------------------------
 
-hash_t SumHash (void* object , size_t len)
+hash_t SumHash (void* object, size_t len)
     {
     IF_HASH
     (

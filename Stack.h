@@ -8,6 +8,10 @@
 #define HASH
 #define LOG
 
+#define STACK_CONSTRUCT(name, quantity) struct Stack name = {};          \
+                                        StackCtor(&name, quantity);      \
+                                        name.name = #name;
+
 #ifdef WITH_CANARY
     #define IF_CANARY(code) code;
 #else
@@ -21,12 +25,13 @@
 #endif
 
 #define STACK_DUMP(stk) StackDump(LOG_FILE, stk, __func__, __FILE__, __LINE__)
-#define VERIFY(stk) if (StackOk(LOG_FILE, stk) != 0)                  \
+#define VERIFY(stk) {int error = StackOk(LOG_FILE, stk);              \
+                        if (error) > 0)                               \
                             {                                         \
                             STACK_DUMP(stk);                          \
-                            return (int) Error::ERROR_STRUCT;         \
-                            }
-
+                            return err;                               \
+                            }                                         \
+                    }
 
 void StackDump(FILE* fp, struct stack* stk, const char* func, const char* file, const int line); ///This function outputs all information about the stack status
 void PrintStack(FILE* fp, const stack *stk);                                                     ///This function outputs the entire stack to a file
@@ -40,39 +45,43 @@ int StackCtor(struct stack* stk, size_t cpt);                                   
 int StackPush(struct stack* stk, const elem_t value);                                            ///This function adds an element to the stack
 
 const canary_t canary_value = 0xDEADBEEF;
-const int MULTIPLIER = 2;
-const int DOUBLE = 2;
+const int MULTIPLIER1 = 3;
+const int MULTIPLIER2 = 2;
 
 struct stack
     {
-    #ifdef WITH_CANARY
+    const char* name;
+    IF_CANARY
+    (
         canary_t stack_first;
-    #endif
+    )
 
     int size;
     int capacity;
     elem_t* data;
 
-    #ifdef HASH
+    IF_HASH
+    (
         hash_t data_hash;
         hash_t struct_hash;
-    #endif
+    )
 
-    #ifdef WITH_CANARY
+    IF_CANARY
+    (
         canary_t stack_last;
-    #endif
+    )
     };
 
 enum class Error
     {
     NO_ERROR            = 0,
-    ERROR_SIZE          = 1,
-    ERROR_CAPACITY      = 2,
-    ERROR_DATA          = 4,
-    ERROR_MEMORY        = 8,
-    ERROR_DATA_CANARY   = 16,
-    ERROR_STRUCT_CANARY = 32,
-    ERROR_STRUCT        = 64
+    ERROR_SIZE          = 1 << 0,
+    ERROR_CAPACITY      = 1 << 1,
+    ERROR_DATA          = 1 << 2,
+    ERROR_MEMORY        = 1 << 3,
+    ERROR_DATA_CANARY   = 1 << 4,
+    ERROR_STRUCT_CANARY = 1 << 5,
+    ERROR_STRUCT        = 1 << 6
     };
 
 #endif // KEY_H_INCLUDED
